@@ -1,40 +1,9 @@
 import { useState, useEffect } from "react";
-import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "firebase/firestore";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAHxMNER21e2Hb65R2qXWaYRhKrjN8zJaU",
-  authDomain: "check-list-peremption.firebaseapp.com",
-  projectId: "check-list-peremption",
-  storageBucket: "check-list-peremption.firebasestorage.app",
-  messagingSenderId: "20359103251",
-  appId: "1:20359103251:web:c52af261ee73613aa4d0e6",
-  measurementId: "G-RVGW7JMXLH"
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
-
-async function fbGet(key) {
-  try {
-    const snap = await getDoc(doc(db, "aps_data", key));
-    return snap.exists() ? snap.data().value : null;
-  } catch { return null; }
-}
-async function fbSet(key, value) {
-  try {
-    await setDoc(doc(db, "aps_data", key), { value });
-  } catch(e) { console.error("Firebase set error", e); }
-}
-function fbListen(key, callback) {
-  return onSnapshot(doc(db, "aps_data", key), (snap) => {
-    if (snap.exists()) callback(snap.data().value);
-  });
-}
 const C={bg:"#0b1120",panel:"#111827",border:"#1f2f4a",accent:"#f97316",accentSoft:"rgba(249,115,22,0.1)",text:"#f0f4ff",muted:"#4d6a8a",success:"#22c55e",successSoft:"rgba(34,197,94,0.12)",danger:"#ef4444",dangerSoft:"rgba(239,68,68,0.1)",warning:"#f59e0b",blue:"#38bdf8",red:"#dc2626",darkBlue:"#1d4ed8"};
 const GS=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap'); *{box-sizing:border-box;} button{cursor:pointer;font-family:inherit;} input,textarea,select{font-family:inherit;} input::placeholder{color:#4d6a8a;}`;
 const isExpired=(d)=>{if(!d)return false;const t=new Date();t.setHours(0,0,0,0);return new Date(d)<t;};
 
+// Confirm dialog component
 function ConfirmDialog({message,onConfirm,onCancel}){
 return(
 <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
@@ -180,7 +149,7 @@ const CHECKLISTS={
 {id:3,label:"Frigo",color:C.red,shelves:[{id:"A",label:"",items:[]}]},
 {id:4,label:"Kits de linge brancard",color:C.darkBlue,shelves:[{id:"A",label:"",items:[{n:"Kit de linge brancard",q:3}]}]},
 {id:6,label:"Appareil multi paramétrage",color:C.red,shelves:[{id:"A",label:"",items:[{n:"Appareil multi paramétrage",q:1,t:true}]}]},
-{id:9,label:"Soin",color:C.darkBlue,shelves:[{id:"A",label:"Étagère A",items:[{n:"Solution désinfectante Hibidil®",q:10,p:true},{n:"Sérum physiologique unidose",q:10,p:true},{n:"Iso-Bétadine® dermique 10%",q:5,p:true},{n:"Compresse 5x5cm",q:10,p:true},{n:"Compresse 7,5x7,5cm",q:10,p:true},{n:"Compresse 10x10cm",q:10,p:true},{n:"Esculape",q:1},{n:"Rouleau Urgoderme",q:1},{n:"Rouleau de sparadrap 2cm",q:2},{n:"Bandage élastique 5cm",q:5,p:true},{n:"Bandage élastique 7cm",q:5,p:true},{n:"Bandage élastique 10cm",q:5,p:true},{n:"Bandage élastique 15cm",q:4,p:true},{n:"Bandage triangulaire + épingle",q:4},{n:"Couverture Isotherme",q:5},{n:"Sac vomitoir",q:5},{n:"Cold Pack",q:5},{n:"Kit pansement autocollant",q:1},{n:"Compresse absorbante 20x10cm",q:5,p:true},{n:"Champ stérile 40x45cm",q:4,p:true}]}]},
+{id:9,label:"Soin",color:C.darkBlue,shelves:[{id:"A",label:"Étagère A",items:[{n:"Solution désinfectante Hibidil®",q:10,p:true},{n:"Sérum physiologique unidose",q:10,p:true},{n:"Iso-Bétadine® dermique 10%",q:5,p:true},{n:"Compresse 5x5cm",q:10,p:true},{n:"Compresse 7,5x7,5cm",q:10,p:true},{n:"Compresse 10x10cm",q:10,p:true},{n:"Esculape",q:1},{n:"Rouleau Urgoderme",q:1},{n:"Rouleau de sparadrap 2cm",q:2},{n:"Bandage élastique 5cm",q:5,p:true},{n:"Bandage élastique 7cm",q:5,p:true},{n:"Bandage élastique 10cm",q:5,p:true},{n:"Bandage élastique 15cm",q:4,p:true},{n:"Bandage triangulaire + épingle",q:4},{n:"Couverture Isotherme",q:5},{n:"Sac vomitoir",q:5},{n:"Cold Pack",q:5},{n:"Kit pansement autocollant",q:1},{n:"Compresse absorbante 20x10cm",q:5,p:true},{n:"Champ stérile 40x45cm",q:4,p:true},{n:"Rouleau Urgoderme",q:1},{n:"Rouleau de sparadrap 2cm",q:2}]}]},
 {id:10,label:"Oxygénothérapie / Ballons",color:C.red,shelves:[
 {id:"A",label:"Adulte",items:[{n:"Masque O² 100% Adulte",q:1,p:true},{n:"Lunette O² Adulte",q:2,p:true},{n:"Masque aérosol Adulte",q:1,p:true},{n:"Tubulure + Raccord Biconique",q:1,p:true}]},
 {id:"B",label:"Enfant",items:[{n:"Masque O² 100% Enfant",q:1,p:true},{n:"Lunette O² Enfant",q:2,p:true},{n:"Masque aérosol Enfant",q:1,p:true}]},
@@ -279,9 +248,9 @@ function usePersistedChecklists() {
   useEffect(() => {
     async function load() {
       try {
-        const result = localStorage.getItem(STORAGE_KEY);
-        if (result) {
-          setData(JSON.parse(result));
+        const v=localStorage.getItem(STORAGE_KEY);
+        if (v) {
+          setData(JSON.parse(v));
         } else {
           setData(CHECKLISTS);
         }
@@ -315,13 +284,17 @@ function AdminPanel({ checklists, onSave, onBack }) {
   const [selectedShelf, setSelectedShelf] = useState(null);
   const [editData, setEditData] = useState(JSON.parse(JSON.stringify(checklists)));
   const [saved, setSaved] = useState(false);
-  const [confirmData, setConfirmData] = useState(null);
+  const [confirmData, setConfirmData] = useState(null); // {message, onConfirm}
   const confirmDelete = (message, onConfirm) => setConfirmData({message, onConfirm});
 
+  // NEW VEHICLE
   const [newVehicleName, setNewVehicleName] = useState("");
+  // NEW SECTION
   const [newSectionLabel, setNewSectionLabel] = useState("");
   const [newSectionColor, setNewSectionColor] = useState(C.red);
+  // NEW SHELF
   const [newShelfLabel, setNewShelfLabel] = useState("");
+  // NEW ITEM
   const [newItemName, setNewItemName] = useState("");
   const [newItemQ, setNewItemQ] = useState(1);
   const [newItemP, setNewItemP] = useState(false);
@@ -342,13 +315,13 @@ function AdminPanel({ checklists, onSave, onBack }) {
     setTimeout(()=>setSaved(false),2000);
   }
 
+  // ── HOME: list of vehicles ──
   if (view === "home") return (
     <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'DM Sans',sans-serif",color:C.text}}>
       {confirmData&&<ConfirmDialog message={confirmData.message} onConfirm={()=>{confirmData.onConfirm();setConfirmData(null);}} onCancel={()=>setConfirmData(null)}/>}
       <div style={{background:C.panel,borderBottom:"1px solid "+C.border,padding:"14px 18px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          {/* BUG FIX 1: Suppression de saveProgress(checks) qui n'existe pas ici */}
-          <button onClick={()=>onBack()} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:8,color:C.muted,padding:"6px 12px",fontSize:14}}>←</button>
+          <button onClick={onBack} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:8,color:C.muted,padding:"6px 12px",fontSize:14}}>←</button>
           <div style={{fontWeight:800,fontSize:16}}>⚙ Admin — Véhicules</div>
         </div>
         <button onClick={handleSave} style={{background:saved?C.success:C.accent,border:"none",borderRadius:8,color:"white",padding:"8px 14px",fontWeight:700,fontSize:13}}>{saved?"✅ Sauvé":"💾 Sauvegarder"}</button>
@@ -376,6 +349,7 @@ function AdminPanel({ checklists, onSave, onBack }) {
     </div>
   );
 
+  // ── VEHICLE: list of sections ──
   const vData = editData[selectedVehicle];
   if (view === "vehicle" && vData) return (
     <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'DM Sans',sans-serif",color:C.text}}>
@@ -427,6 +401,7 @@ function AdminPanel({ checklists, onSave, onBack }) {
     </div>
   );
 
+  // ── SECTION: list of shelves + items ──
   const sec = vData?.sections[selectedSection];
   if (view === "section" && sec) return (
     <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'DM Sans',sans-serif",color:C.text}}>
@@ -449,6 +424,7 @@ function AdminPanel({ checklists, onSave, onBack }) {
             ))}
           </div>
         </div>
+
         {sec.shelves.map((shelf,shi)=>(
           <div key={shi} style={card}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
@@ -517,8 +493,6 @@ const[amb1,setAmb1]=useState("");const[amb2,setAmb2]=useState("");
 const[semaine,setSemaine]=useState("");const[remarks,setRemarks]=useState("");
 const[submitted,setSubmitted]=useState(false);
 const gk=(sId,shId,name)=>`${sId}__${shId}__${name}`;
-const saveProgress=async(ch)=>{const key="prog_"+getWeekKey()+"_"+vehicleName;localStorage.setItem(key,JSON.stringify(ch));try{const {doc,setDoc}=await import("firebase/firestore");await setDoc(doc(db,"progress",key),{checks:ch,week:getWeekKey(),vehicleName,updatedAt:Date.now()});}catch(e){}};
-useEffect(()=>{const key="prog_"+getWeekKey()+"_"+vehicleName;async function load(){try{const {doc,getDoc}=await import("firebase/firestore");const snap=await getDoc(doc(db,"progress",key));if(snap.exists())setChecks(snap.data().checks);}catch(e){const saved=localStorage.getItem(key);if(saved)setChecks(JSON.parse(saved));}}load();},[vehicleName]);
 const setC=(key,field,value)=>setChecks(p=>({...p,[key]:{...p[key],[field]:value}}));
 const toggle=(id)=>setExpanded(p=>({...p,[id]:!p[id]}));
 const setCF=(key,found,required)=>setChecks(p=>({...p,[key]:{...p[key],found,required}}));
@@ -537,6 +511,8 @@ const itemHasIssue=(key,item)=>{
   if(item.p&&s.date&&isExpired(s.date))return true;
   return false;
 };
+
+// Check if all items have mandatory OK/NOK filled
 const getMissingValidations=()=>{
   const missing=[];
   data.sections.forEach(sec=>{
@@ -598,7 +574,7 @@ if(submitted)return(
 )}
 {remarks&&<div style={{background:C.panel,border:"1px solid "+C.border,borderRadius:12,padding:"16px",marginBottom:14}}><div style={{fontSize:11,fontWeight:700,color:C.muted,textTransform:"uppercase",marginBottom:8}}>Remarques</div><div style={{fontSize:13}}>{remarks}</div></div>}
 <div style={{background:"rgba(34,197,94,0.12)",border:"1px solid "+C.success,borderRadius:10,padding:"14px",textAlign:"center",fontWeight:700,color:C.success}}>✅ Rapport envoyé au responsable</div>
-<button onClick={()=>{saveProgress(checks);onBack();}} style={{width:"100%",marginTop:12,background:"transparent",border:"1px solid "+C.border,borderRadius:10,color:C.muted,padding:"12px",fontWeight:700,fontSize:14}}>← Retour à la liste</button>
+<button onClick={onBack} style={{width:"100%",marginTop:12,background:"transparent",border:"1px solid "+C.border,borderRadius:10,color:C.muted,padding:"12px",fontWeight:700,fontSize:14}}>← Retour à la liste</button>
 </div>
 </div>
 );
@@ -609,7 +585,7 @@ return(
 <div style={{background:C.panel,borderBottom:"1px solid "+C.border,padding:"13px 16px",position:"sticky",top:0,zIndex:10}}>
 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
 <div style={{display:"flex",alignItems:"center",gap:10}}>
-<button onClick={()=>{saveProgress(checks);onBack();}} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:8,color:C.muted,padding:"5px 10px",fontSize:14}}>←</button>
+<button onClick={onBack} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:8,color:C.muted,padding:"5px 10px",fontSize:14}}>←</button>
 <div style={{width:34,height:34,background:C.red,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17}}>🚑</div>
 <div>
 <div style={{fontWeight:800,fontSize:15}}>{vehicleName} — Checklist</div>
@@ -717,6 +693,7 @@ return(
 </div>
 </div>
 <div style={{position:"fixed",bottom:0,left:0,right:0,background:C.panel,borderTop:"1px solid "+C.border,padding:"13px 16px"}}>
+
 {!canSubmit&&<div style={{background:"rgba(239,68,68,0.1)",border:"1px solid #ef4444",borderRadius:8,padding:"8px 12px",marginBottom:8,fontSize:11,color:"#ef4444",fontWeight:600}}>⚠ Cochez OK ou NOK pour chaque article ({missingValidations.length} restant{missingValidations.length>1?"s":""})</div>}
 <button onClick={()=>{if(canSubmit){const issues=[];data.sections.forEach(sec=>{sec.shelves.forEach(sh=>{sh.items.forEach(item=>{const key=gk(sec.id,sh.id,item.n);const state=checks[key]||{};if(state.found!==undefined&&state.found<item.q)issues.push({name:item.n,section:sec.label,type:"missing",missing:item.q-state.found,required:item.q});if(item.t&&state.testOk===false)issues.push({name:item.n,section:sec.label,type:"nok_test"});if(item.s&&state.sealOk===false)issues.push({name:item.n,section:sec.label,type:"nok_seal"});if(item.p&&state.date&&isExpired(state.date))issues.push({name:item.n,section:sec.label,type:"expired",date:state.date});});});});if(onSubmit)onSubmit({vehicle:vehicleName,date:new Date().toLocaleDateString("fr-FR"),semaine,amb1,amb2,progress,remarks,issues});setSubmitted(true);}}} style={{width:"100%",background:!canSubmit?C.danger:progress===100?C.success:C.accent,border:"none",borderRadius:10,color:"white",padding:"14px",fontWeight:800,fontSize:15,opacity:canSubmit?1:0.6}}>
 {canSubmit?(progress===100?"✅ Envoyer au responsable":"📤 Envoyer ("+progress+"% complété)"):"⚠ "+missingValidations.length+" validation(s) manquante(s)"}
@@ -735,8 +712,7 @@ const[error,setError]=useState(false);
 return(
 <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'DM Sans',sans-serif",color:C.text,display:"flex",flexDirection:"column"}}>
 <div style={{background:C.panel,borderBottom:"1px solid "+C.border,padding:"14px 18px",display:"flex",alignItems:"center",gap:10}}>
-  {/* BUG FIX 1: Suppression de saveProgress(checks) qui n'existe pas ici */}
-  <button onClick={()=>onBack()} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:8,color:C.muted,padding:"6px 12px",fontSize:14}}>←</button>
+<button onClick={onBack} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:8,color:C.muted,padding:"6px 12px",fontSize:14}}>←</button>
 <div style={{fontWeight:800,fontSize:16}}>⚙ Admin — Connexion</div>
 </div>
 <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:"30px"}}>
@@ -755,12 +731,17 @@ return(
 }
 
 // ══════════════════════════════════════
+// APP
+// ══════════════════════════════════════
+
+// ══════════════════════════════════════
 // REPORTS STORAGE KEY
 // ══════════════════════════════════════
 const REPORTS_KEY="aps_reports_v1";
 const WEEKLY_KEY="aps_weekly_done_v1";
 const REPORTS_PWD="aps.bravo-xavier";
 
+// Get current week key (YYYY-WNN)
 function getWeekKey(){
   const now=new Date();
   const jan1=new Date(now.getFullYear(),0,1);
@@ -777,8 +758,7 @@ const[error,setError]=useState(false);
 return(
 <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'DM Sans',sans-serif",color:C.text,display:"flex",flexDirection:"column"}}>
 <div style={{background:C.panel,borderBottom:"1px solid "+C.border,padding:"14px 18px",display:"flex",alignItems:"center",gap:10}}>
-  {/* BUG FIX 1: Suppression de saveProgress(checks) qui n'existe pas ici */}
-  <button onClick={()=>onBack()} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:8,color:C.muted,padding:"6px 12px",fontSize:14}}>←</button>
+<button onClick={onBack} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:8,color:C.muted,padding:"6px 12px",fontSize:14}}>←</button>
 <div style={{fontWeight:800,fontSize:16}}>📋 Rapports — Connexion</div>
 </div>
 <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:"30px"}}>
@@ -801,8 +781,17 @@ return(
 // ══════════════════════════════════════
 function ReportsView({onBack,reports,onDeleteReport,onTreatItem}){
 const[filter,setFilter]=useState("all");
+const loaded=true;
 const[confirmData,setConfirmData]=useState(null);
 const confirmDelete=(message,onConfirm)=>setConfirmData({message,onConfirm});
+
+function markItemTreated(reportId,issueIdx){
+  onTreatItem(reportId,issueIdx);
+}
+
+function deleteReport(reportId){
+  onDeleteReport(reportId);
+}
 
 const filtered=reports.filter(r=>{
   if(filter==="pending")return!r.fullyTreated;
@@ -810,13 +799,13 @@ const filtered=reports.filter(r=>{
   return true;
 }).sort((a,b)=>b.timestamp-a.timestamp);
 
+
 return(
 <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'DM Sans',sans-serif",color:C.text,display:"flex",flexDirection:"column"}}>
 {confirmData&&<ConfirmDialog message={confirmData.message} onConfirm={()=>{confirmData.onConfirm();setConfirmData(null);}} onCancel={()=>setConfirmData(null)}/>}
 <div style={{background:C.panel,borderBottom:"1px solid "+C.border,padding:"14px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:10}}>
 <div style={{display:"flex",alignItems:"center",gap:10}}>
-  {/* BUG FIX 1: Suppression de saveProgress(checks) qui n'existe pas ici */}
-  <button onClick={()=>onBack()} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:8,color:C.muted,padding:"6px 12px",fontSize:14}}>←</button>
+<button onClick={onBack} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:8,color:C.muted,padding:"6px 12px",fontSize:14}}>←</button>
 <div style={{fontWeight:800,fontSize:16}}>📋 Rapports ({reports.length})</div>
 </div>
 </div>
@@ -841,16 +830,17 @@ return(
 </div>
 <button onClick={()=>confirmDelete("Supprimer ce rapport ?",()=>onDeleteReport(report.id))} style={{background:C.dangerSoft,border:"1px solid "+C.danger,borderRadius:8,color:C.danger,padding:"6px 10px",fontSize:12,fontWeight:700}}>🗑</button>
 </div>
+
 {report.issues&&report.issues.length>0&&(
 <div>
 <div style={{fontSize:11,fontWeight:700,color:C.muted,textTransform:"uppercase",marginBottom:8}}>Problèmes ({report.issues.filter(i=>!i.treated).length} restants)</div>
 {report.issues.map((issue,idx)=>(
-<div key={idx} style={{display:"flex",alignItems:"center",justifyContent:"space-between",background:issue.treated?"rgba(34,197,94,0.06)":C.dangerSoft,border:"1px solid "+(issue.treated?C.success:C.danger),borderRadius:8,padding:"8px 10px",marginBottom:6}}>
+<div key={idx} style={{display:"flex",alignItems:"center",justifyContent:"space-between",background:issue.treated?"rgba(34,197,94,0.06)":issue.type==="missing"?C.dangerSoft:issue.type==="expired"?"rgba(239,68,68,0.06)":"rgba(239,68,68,0.06)",border:"1px solid "+(issue.treated?C.success:C.danger),borderRadius:8,padding:"8px 10px",marginBottom:6}}>
 <div style={{flex:1}}>
 <div style={{fontSize:12,fontWeight:700,color:issue.treated?C.success:C.text,textDecoration:issue.treated?"line-through":"none"}}>{issue.name}</div>
 <div style={{fontSize:10,color:C.muted}}>{issue.section} · {issue.type==="missing"?"Manque "+issue.missing+"/"+issue.required:issue.type==="expired"?"⚠ PÉRIMÉ":issue.type==="nok_test"?"❌ Test NOK":"❌ Scellé NOK"}</div>
 </div>
-{!issue.treated&&<button onClick={()=>onTreatItem(report.id,idx)} style={{background:C.successSoft,border:"1px solid "+C.success,borderRadius:8,color:C.success,padding:"6px 10px",fontSize:11,fontWeight:700,marginLeft:8,flexShrink:0}}>✅ Traité</button>}
+{!issue.treated&&<button onClick={()=>markItemTreated(report.id,idx)} style={{background:C.successSoft,border:"1px solid "+C.success,borderRadius:8,color:C.success,padding:"6px 10px",fontSize:11,fontWeight:700,marginLeft:8,flexShrink:0}}>✅ Traité</button>}
 {issue.treated&&<span style={{color:C.success,fontSize:16,marginLeft:8}}>✓</span>}
 </div>
 ))}
@@ -877,31 +867,22 @@ const[reports,setReports]=useState([]);
 useEffect(()=>{
   async function loadWeekly(){
     try{
-      const r=localStorage.getItem(WEEKLY_KEY);
-      if(r){
-        const data=JSON.parse(r);
+      const rv=localStorage.getItem(WEEKLY_KEY);
+      if(rv){
+        const data=JSON.parse(rv);
         const currentWeek=getWeekKey();
+        // Only keep entries from current week
         const filtered={};
         Object.keys(data).forEach(k=>{if(data[k].week===currentWeek)filtered[k]=data[k];});
         setWeeklyDone(filtered);
       }
     }catch{}
-    try{
-      const snap=await getDoc(doc(db,"weekly",getWeekKey()));
-      if(snap.exists())setWeeklyDone(prev=>({...prev,...snap.data()}));
-    }catch(e){console.error("FB WEEKLY LOAD",e);}
   }
   async function loadReports(){
     try{
-      const r=localStorage.getItem(REPORTS_KEY);
-      if(r)setReports(JSON.parse(r));
+      const rv2=localStorage.getItem(REPORTS_KEY);
+      if(rv2)setReports(JSON.parse(rv2));
     }catch{}
-    try{
-      const {getDocs,collection}=await import("firebase/firestore");
-      const snap=await getDocs(collection(db,"reports"));
-      const docs=snap.docs.map(d=>d.data());
-      if(docs.length>0)setReports(docs);
-    }catch(e){console.error("FB LOAD ERROR",e);}
   }
   loadWeekly();
   loadReports();
@@ -911,15 +892,8 @@ async function markWeeklyDone(vehicleName){
   const updated={...weeklyDone,[vehicleName]:{week:getWeekKey(),done:true}};
   setWeeklyDone(updated);
   try{localStorage.setItem(WEEKLY_KEY,JSON.stringify(updated));}catch{}
-  try{
-    const {updateDoc,setDoc:sd}=await import("firebase/firestore");
-    const wr=doc(db,"weekly",getWeekKey());
-    try{await updateDoc(wr,{[vehicleName]:{week:getWeekKey(),done:true}});}
-    catch{await sd(wr,{[vehicleName]:{week:getWeekKey(),done:true}});}
-  }catch(e){console.error("FB WEEKLY ERROR",e);}
 }
 
-// BUG FIX 2 & 3: saveReport corrigé (vehicle pas vehicleName)
 async function saveReport(reportData){
   const newReport={
     id:Date.now(),
@@ -929,23 +903,16 @@ async function saveReport(reportData){
   };
   const updated=[...reports,newReport];
   setReports(updated);
-  try{localStorage.setItem(REPORTS_KEY,JSON.stringify(updated));}catch(e){console.error("SAVE ERROR",e);}
-  try{await setDoc(doc(db,"reports",String(newReport.id)),newReport);}catch(e){console.error("FB SAVE ERROR",e);}
-  markWeeklyDone(reportData.vehicle||selected);
+  try{localStorage.setItem(REPORTS_KEY,JSON.stringify(updated));}catch{}
+  markWeeklyDone(reportData.vehicle);
 }
 
-// BUG FIX 2: deleteReport corrigé (plus de référence à newReport)
 async function deleteReport(reportId){
   const updated=reports.filter(r=>r.id!==reportId);
   setReports(updated);
-  try{localStorage.setItem(REPORTS_KEY,JSON.stringify(updated));}catch(e){console.error("SAVE ERROR",e);}
-  try{
-    const {deleteDoc,doc:d}=await import("firebase/firestore");
-    await deleteDoc(d(db,"reports",String(reportId)));
-  }catch(e){console.error("FB DELETE ERROR",e);}
+  try{localStorage.setItem(REPORTS_KEY,JSON.stringify(updated));}catch{}
 }
 
-// BUG FIX 2: treatItem corrigé (plus de référence à newReport)
 async function treatItem(reportId,issueIdx){
   const updated=reports.map(r=>{
     if(r.id!==reportId)return r;
@@ -954,12 +921,7 @@ async function treatItem(reportId,issueIdx){
     return{...r,issues:newIssues,fullyTreated:allTreated};
   });
   setReports(updated);
-  try{localStorage.setItem(REPORTS_KEY,JSON.stringify(updated));}catch(e){console.error("SAVE ERROR",e);}
-  try{
-    const rep=updated.find(r=>r.id===reportId);
-    const {doc:d,setDoc:sd}=await import("firebase/firestore");
-    await sd(d(db,"reports",String(reportId)),rep);
-  }catch(e){console.error("FB TREAT ERROR",e);}
+  try{localStorage.setItem(REPORTS_KEY,JSON.stringify(updated));}catch{}
 }
 
 if(!loaded)return(
@@ -969,7 +931,7 @@ if(!loaded)return(
 if(screen==="login")return <AdminLogin onSuccess={()=>setScreen("admin")} onBack={()=>setScreen("home")}/>;
 if(screen==="admin")return <AdminPanel checklists={checklists} onSave={saveChecklists} onBack={()=>setScreen("home")}/>;
 if(screen==="reports_login")return <ReportsLogin onSuccess={()=>setScreen("reports")} onBack={()=>setScreen("home")}/>;
-if(screen==="reports")return <ReportsView onBack={()=>setScreen("home")} reports={reports} onDeleteReport={deleteReport} onTreatItem={treatItem}/>;
+if(screen==="reports")return <ReportsView onBack={()=>setScreen("home")} reports={reports} onDeleteReport={deleteReport} onTreatItem={treatItem}/>; 
 if(selected)return <ChecklistView vehicleName={selected} data={checklists[selected]} onBack={()=>setSelected(null)} onSubmit={saveReport}/>;
 
 const currentWeek=getWeekKey();
@@ -993,9 +955,8 @@ return(
 <div style={{display:"flex",flexDirection:"column",gap:10}}>
 {Object.keys(checklists).map(name=>{
 const done=weeklyDone[name]&&weeklyDone[name].week===currentWeek;
-const inProg=!done&&!!localStorage.getItem("prog_"+currentWeek+"_"+name);
 return(
-<button key={name} onClick={()=>setSelected(name)} style={{background:done?"rgba(34,197,94,0.08)":C.panel,border:"1px solid "+(done?C.success:inProg?"#f97316":C.border),borderRadius:13,padding:"16px 20px",color:C.text,textAlign:"left",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+<button key={name} onClick={()=>setSelected(name)} style={{background:done?"rgba(34,197,94,0.08)":C.panel,border:"1px solid "+(done?C.success:C.border),borderRadius:13,padding:"16px 20px",color:C.text,textAlign:"left",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
 <div style={{display:"flex",alignItems:"center",gap:12}}>
 <div style={{width:42,height:42,background:done?C.success:C.red,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>{done?"✅":"🚑"}</div>
 <div>
