@@ -737,17 +737,24 @@ return(
 // ══════════════════════════════════════
 // REPORTS STORAGE KEY
 // ══════════════════════════════════════
-const REPORTS_KEY="aps_reports_v1";
-const WEEKLY_KEY="aps_weekly_done_v1";
-const REPORTS_PWD="aps.bravo-xavier";
 
-// Get current week key (YYYY-WNN)
-function getWeekKey(){
-  const now=new Date();
-  const jan1=new Date(now.getFullYear(),0,1);
-  const week=Math.ceil(((now-jan1)/86400000+jan1.getDay()+1)/7);
-  return now.getFullYear()+"-W"+String(week).padStart(2,"0");
+
+function getWeekKey() {
+  const now = new Date();
+  const day = now.getDay();
+  const diffToMonday = (day === 0) ? -6 : 1 - day;
+  const monday = new Date(now);
+  monday.setHours(0, 0, 0, 0);
+  monday.setDate(now.getDate() + diffToMonday);
+
+  const jan4 = new Date(monday.getFullYear(), 0, 4);
+  const startOfWeek1 = new Date(jan4);
+  startOfWeek1.setDate(jan4.getDate() - (jan4.getDay() || 7) + 1);
+  const weekNum = Math.round((monday - startOfWeek1) / (7 * 86400000)) + 1;
+
+  return monday.getFullYear() + "-W" + String(weekNum).padStart(2, "0");
 }
+
 
 // ══════════════════════════════════════
 // REPORTS LOGIN
