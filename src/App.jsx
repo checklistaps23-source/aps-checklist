@@ -512,6 +512,8 @@ const itemHasIssue=(key,item)=>{
   return false;
 };
 
+
+
 // Check if all items have mandatory OK/NOK filled
 const getMissingValidations=()=>{
   const missing=[];
@@ -525,6 +527,7 @@ const getMissingValidations=()=>{
         else{
           if(item.t&&state.testOk===undefined)missing.push(item.n+" (Fonctionnel)");
           if(item.s&&state.sealOk===undefined)missing.push(item.n+" (Scellé)");
+          if(item.p&&new Date().getDate()<=7&&!state.date)missing.push(item.n+" (Date péremption)");
         }
       });
     });
@@ -533,6 +536,7 @@ const getMissingValidations=()=>{
 };
 const missingValidations=getMissingValidations();
 const canSubmit=missingValidations.length===0;
+
 
 if(submitted)return(
 <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'DM Sans',sans-serif",color:C.text}}>
