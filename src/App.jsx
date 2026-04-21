@@ -66,8 +66,8 @@ function getWeekKey() {
 // ══════════════════════════════════════
 // CONSTANTS
 // ══════════════════════════════════════
-const ADMIN_PWD = "aps.ckeckremlist";
-const REPORTS_PWD = "aps.bravo-xavier";
+const ADMIN_PWD = "aps.remlist";
+const REPORTS_PWD = "7520Templeuve";
 const STORAGE_KEY = "aps_checklists_v1";
 
 // ══════════════════════════════════════
