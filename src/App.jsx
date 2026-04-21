@@ -1120,57 +1120,55 @@ export default function App() {
 
   const currentWeek = getWeekKey();
 
-  return (
-    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "'DM Sans',sans-serif", color: C.text, display: "flex", flexDirection: "column" }}>
-      <style>{GS}</style>
-      <div style={{ background: C.panel, borderBottom: "1px solid " + C.border, padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: C.cardShadow }}>
-        <button onClick={() => setScreen("reports_login")} style={{ background: "#f1f5f9", border: "none", borderRadius: 10, color: C.muted, padding: "8px 12px", fontSize: 20 }}>📋</button>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 40, height: 40, background: C.red, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>🚑</div>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: 18, color: C.text }}>A.P.S. — Checklists</div>
-            <div style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "1.2px" }}>Sélectionnez votre véhicule</div>
-          </div>
-        </div>
-        <button onClick={() => setScreen("login")} style={{ background: "#f1f5f9", border: "none", borderRadius: 10, color: C.muted, padding: "8px 12px", fontSize: 20 }}>⚙</button>
-      </div>
-
-      {/* Bouton Réappro */}
-      {reports.some(r => r.issues && r.issues.some(i => (i.remaining !== undefined ? i.remaining : (i.type === "missing" ? i.missing : 1)) > 0)) && (
-        <button onClick={() => setScreen("reapro")} style={{ margin: "12px 20px 0", background: C.dangerSoft, border: "1px solid " + C.danger, borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", color: C.danger, fontWeight: 700, fontSize: 14 }}>
-          <span>📦 Réapprovisionnement en attente</span>
-          <span style={{ background: C.danger, color: "white", borderRadius: 20, padding: "2px 10px", fontSize: 12 }}>
-            {reports.reduce((acc, r) => acc + (r.issues ? r.issues.filter(i => (i.remaining !== undefined ? i.remaining : (i.type === "missing" ? i.missing : 1)) > 0).length : 0), 0)} manque(s)
-          </span>
-        </button>
-      )}
-
-      <div style={{ flex: 1, padding: "16px 20px", maxWidth: 480, margin: "0 auto", width: "100%" }}>
-        <div style={{ fontSize: 12, color: C.muted, marginBottom: 16, textAlign: "center" }}>Semaine {currentWeek}</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {Object.keys(checklists).map(name => {
-            const done = weeklyDone[name] && weeklyDone[name].week === currentWeek;
-            const hasIssues = reports.some(r => r.vehicle === name && r.issues && r.issues.some(i => (i.remaining !== undefined ? i.remaining : (i.type === "missing" ? i.missing : 1)) > 0));
-            return (
-              <button key={name} onClick={() => setSelected(name)} style={{ background: done ? C.successSoft : C.panel, border: "1px solid " + (done ? C.success : hasIssues ? C.danger : C.border), borderRadius: 13, padding: "16px 20px", color: C.text, textAlign: "left", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: C.cardShadow }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 42, height: 42, background: done ? C.success : hasIssues ? C.danger : C.red, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>{done ? "✅" : hasIssues ? "⚠️" : "🚑"}</div>
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 16 }}>{name}</div>
-                    <div style={{ fontSize: 11, color: done ? C.success : hasIssues ? C.danger : C.muted }}>{done ? "✅ Fait cette semaine" : hasIssues ? "⚠ Manques en attente" : "Éd. " + checklists[name].edition + " · " + checklists[name].norme}</div>
-                  </div>
-                </div>
-                <span style={{ color: C.muted, fontSize: 20 }}>→</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Accès direct réappro armoire */}
-        <button onClick={() => setScreen("reapro")} style={{ width: "100%", marginTop: 20, background: C.panel, border: "2px dashed " + C.border, borderRadius: 13, padding: "14px 20px", color: C.muted, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontWeight: 700, fontSize: 14 }}>
-          <span>📦</span> Accès Réapprovisionnement
-        </button>
+return (
+<div style={{ minHeight: "100vh", background: C.bg, fontFamily: "'DM Sans',sans-serif", color: C.text, display: "flex", flexDirection: "column", maxWidth: "640px", margin: "0 auto" }}>
+  <style>{GS}</style>
+  <div style={{ background: C.panel, borderBottom: "1px solid " + C.border, padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: C.cardShadow }}>
+    <button onClick={() => setScreen("reports_login")} style={{ background: "#f1f5f9", border: "none", borderRadius: 10, color: C.muted, padding: "8px 12px", fontSize: 20 }}>📋</button>
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{ width: 40, height: 40, background: C.red, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>🚑</div>
+      <div>
+        <div style={{ fontWeight: 800, fontSize: 18, color: C.text }}>A.P.S. — Checklists</div>
+        <div style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "1.2px" }}>Sélectionnez votre véhicule</div>
       </div>
     </div>
-  );
+    <button onClick={() => setScreen("login")} style={{ background: "#f1f5f9", border: "none", borderRadius: 10, color: C.muted, padding: "8px 12px", fontSize: 20 }}>⚙</button>
+  </div>
+
+  {reports.some(r => r.issues && r.issues.some(i => (i.remaining !== undefined ? i.remaining : (i.type === "missing" ? i.missing : 1)) > 0)) && (
+    <button onClick={() => setScreen("reapro")} style={{ margin: "12px 20px 0", background: C.dangerSoft, border: "1px solid " + C.danger, borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", color: C.danger, fontWeight: 700, fontSize: 14 }}>
+      <span>📦 Réapprovisionnement en attente</span>
+      <span style={{ background: C.danger, color: "white", borderRadius: 20, padding: "2px 10px", fontSize: 12 }}>
+        {reports.reduce((acc, r) => acc + (r.issues ? r.issues.filter(i => (i.remaining !== undefined ? i.remaining : (i.type === "missing" ? i.missing : 1)) > 0).length : 0), 0)} manque(s)
+      </span>
+    </button>
+  )}
+
+  <div style={{ flex: 1, padding: "16px 20px", width: "100%" }}>
+    <div style={{ fontSize: 12, color: C.muted, marginBottom: 16, textAlign: "center" }}>Semaine {currentWeek}</div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {Object.keys(checklists).map(name => {
+        const done = weeklyDone[name] && weeklyDone[name].week === currentWeek;
+        const hasIssues = reports.some(r => r.vehicle === name && r.issues && r.issues.some(i => (i.remaining !== undefined ? i.remaining : (i.type === "missing" ? i.missing : 1)) > 0));
+        return (
+          <button key={name} onClick={() => setSelected(name)} style={{ background: done ? C.successSoft : C.panel, border: "1px solid " + (done ? C.success : hasIssues ? C.danger : C.border), borderRadius: 13, padding: "16px 20px", color: C.text, textAlign: "left", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: C.cardShadow }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 42, height: 42, background: done ? C.success : hasIssues ? C.danger : C.red, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>{done ? "✅" : hasIssues ? "⚠️" : "🚑"}</div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: 16 }}>{name}</div>
+                <div style={{ fontSize: 11, color: done ? C.success : hasIssues ? C.danger : C.muted }}>{done ? "✅ Fait cette semaine" : hasIssues ? "⚠ Manques en attente" : "Éd. " + checklists[name].edition + " · " + checklists[name].norme}</div>
+              </div>
+            </div>
+            <span style={{ color: C.muted, fontSize: 20 }}>→</span>
+          </button>
+        );
+      })}
+    </div>
+
+    <button onClick={() => setScreen("reapro")} style={{ width: "100%", marginTop: 20, background: C.panel, border: "2px dashed " + C.border, borderRadius: 13, padding: "14px 20px", color: C.muted, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontWeight: 700, fontSize: 14 }}>
+      <span>📦</span> Accès Réapprovisionnement
+    </button>
+  </div>
+</div>
+);
 }
