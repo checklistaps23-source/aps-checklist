@@ -408,6 +408,12 @@ function ChecklistView({ vehicleName, data, onBack, onSubmit }) {
   const missingValidations = getMissingValidations();
   const canSubmit = missingValidations.length === 0;
 
+
+const scrollToFirst = () => {
+  const el = document.getElementById("first-missing");
+  if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
+};
+
   const headerStyle = { background: C.panel, borderBottom: "1px solid " + C.border, padding: "13px 16px", position: "sticky", top: 0, zIndex: 10, boxShadow: C.cardShadow };
 
   if (submitted) return (
@@ -572,22 +578,30 @@ function ChecklistView({ vehicleName, data, onBack, onSubmit }) {
           <textarea value={remarks} onChange={e => setRemarks(e.target.value)} placeholder="Matériel manquant, observations..." rows={3} style={{ width: "100%", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, padding: "10px 12px", color: C.text, fontSize: 13, resize: "none" }} />
         </div>
       </div>
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: C.panel, borderTop: "1px solid " + C.border, padding: "13px 16px", boxShadow: "0 -4px 20px rgba(0,0,0,0.08)" }}>
-        {!canSubmit && <div style={{ background: C.dangerSoft, border: "1px solid " + C.danger, borderRadius: 8, padding: "8px 12px", marginBottom: 8, fontSize: 11, color: C.danger, fontWeight: 600 }}>⚠ Cochez OK ou NOK pour chaque article ({missingValidations.length} restant{missingValidations.length > 1 ? "s" : ""})</div>}
-        <button onClick={() => {
-          if (canSubmit) {
-            const issues = [];
-            data.sections.forEach(sec => { sec.shelves.forEach(sh => { sh.items.forEach(item => { const key = gk(sec.id, sh.id, item.n); const state = checks[key] || {}; if (state.found !== undefined && state.found < item.q) issues.push({ name: item.n, section: sec.label, type: "missing", missing: item.q - state.found, required: item.q }); if (item.t && state.testOk === false) issues.push({ name: item.n, section: sec.label, type: "nok_test" }); if (item.s && state.sealOk === false) issues.push({ name: item.n, section: sec.label, type: "nok_seal" }); if (item.p && state.date && isExpired(state.date)) issues.push({ name: item.n, section: sec.label, type: "expired", date: state.date }); }); }); });
-            if (onSubmit) onSubmit({ vehicle: vehicleName, date: new Date().toLocaleDateString("fr-FR"), semaine, amb1, amb2, progress, remarks, issues });
-            setSubmitted(true);
-          }
-        }} style={{ width: "100%", background: !canSubmit ? "#94a3b8" : progress === 100 ? C.success : C.accent, border: "none", borderRadius: 10, color: "white", padding: "14px", fontWeight: 800, fontSize: 15, opacity: canSubmit ? 1 : 0.7 }}>
-          {canSubmit ? (progress === 100 ? "✅ Envoyer au responsable" : "📤 Envoyer (" + progress + "% complété)") : "⚠ " + missingValidations.length + " validation(s) manquante(s)"}
-        </button>
-      </div>
-    </div>
-  );
+     
+
+<div style={{position:"fixed",bottom:0,left:0,right:0,background:C.panel,borderTop:"1px solid "+C.border,padding:"13px 16px",boxShadow:"0 -4px 20px rgba(0,0,0,0.08)"}}>
+{!canSubmit&&<div style={{background:C.dangerSoft,border:"1px solid "+C.danger,borderRadius:8,padding:"8px 12px",marginBottom:8,fontSize:11,color:C.danger,fontWeight:600}}>⚠ Cochez OK ou NOK pour chaque article ({missingValidations.length} restant{missingValidations.length>1?"s":""})</div>}
+<button onClick={()=>{
+  if(!canSubmit){
+    const firstMissing=missingValidations[0]?.split(" (")[0];
+    const el=document.getElementById("item-"+firstMissing?.replace(/\s+/g,"-"));
+    if(el)el.scrollIntoView({behavior:"smooth",block:"center"});
+    return;
+  }
+  const issues=[];
+  data.sections.forEach(sec=>{sec.shelves.forEach(sh=>{sh.items.forEach(item=>{const key=gk(sec.id,sh.id,item.n);const state=checks[key]||{};if(state.found!==undefined&&state.found<item.q)issues.push({name:item.n,section:sec.label,type:"missing",missing:item.q-state.found,required:item.q});if(item.t&&state.testOk===false)issues.push({name:item.n,section:sec.label,type:"nok_test"});if(item.s&&state.sealOk===false)issues.push({name:item.n,section:sec.label,type:"nok_seal"});if(item.p&&state.date&&isExpired(state.date))issues.push({name:item.n,section:sec.label,type:"expired",date:state.date});});});});
+  if(onSubmit)onSubmit({vehicle:vehicleName,date:new Date().toLocaleDateString("fr-FR"),semaine,amb1,amb2,progress,remarks,issues});
+  setSubmitted(true);
+}} style={{width:"100%",background:!canSubmit?"#94a3b8":progress===100?C.success:C.accent,border:"none",borderRadius:10,color:"white",padding:"14px",fontWeight:800,fontSize:15,opacity:canSubmit?1:0.7}}>
+{canSubmit?(progress===100?"✅ Envoyer au responsable":"📤 Envoyer ("+progress+"% complété)"):"⚠ "+missingValidations.length+" validation(s) manquante(s)"}
+</button>
+</div>
+</div>
+);
 }
+
+
 
 // ══════════════════════════════════════
 // ADMIN LOGIN
