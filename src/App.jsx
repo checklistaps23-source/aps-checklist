@@ -810,7 +810,10 @@ function ReportsLogin({ onSuccess, onBack }) {
 // ══════════════════════════════════════
 // REPORTS VIEW
 // ══════════════════════════════════════
-function ReportsView({ onBack, reports, onDeleteReport, onTreatItem, onResetReports, comptabilite, onResetComptabilite }) {
+
+
+function ReportsView({onBack,reports,onDeleteReport,onTreatItem,onResetReports,comptabilite,onResetComptabilite,historique,onResetHistorique}){
+
   const [tab, setTab] = useState("rapports");
   const [filter, setFilter] = useState("all");
   const [confirmData, setConfirmData] = useState(null);
@@ -890,31 +893,38 @@ function ReportsView({ onBack, reports, onDeleteReport, onTreatItem, onResetRepo
         </>}
 
         {/* ── HISTORIQUE ── */}
-        {tab === "historique" && <>
-          <div style={{ fontSize: 12, color: C.muted, marginBottom: 12 }}>Toutes les checklists effectuées</div>
-          {reports.length === 0 && <div style={{ textAlign: "center", color: C.muted, padding: "40px" }}>Aucune checklist</div>}
-          {[...reports].sort((a, b) => b.timestamp - a.timestamp).map(report => {
-            const allOk = !report.issues || report.issues.length === 0;
-            const allReapro = report.allReapro;
-            const color = allOk || allReapro ? C.success : C.danger;
-            const bg = allOk || allReapro ? C.successSoft : C.dangerSoft;
-            return (
-              <div key={report.id} style={{ ...card, borderLeft: "4px solid " + color, background: bg }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 14, color: C.text }}>🚑 {report.vehicle}</div>
-                    <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{report.date} · Sem. {report.semaine || "?"} · {report.amb1 || "—"} / {report.amb2 || "—"}</div>
-                    <div style={{ fontSize: 11, color: C.muted }}>Complété à {report.progress}%</div>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 20 }}>{allOk || allReapro ? "✅" : "🔴"}</div>
-                    <div style={{ fontSize: 10, color, fontWeight: 700 }}>{allOk ? "Tout OK" : allReapro ? "Réappro OK" : `${report.issues?.length || 0} manque(s)`}</div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </>}
+        
+
+
+{tab === "historique" && <>
+  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+    <div style={{fontSize:12,color:C.muted}}>Toutes les checklists effectuées</div>
+    <button onClick={onResetHistorique} style={{background:C.dangerSoft,border:"1px solid "+C.danger,borderRadius:8,color:C.danger,padding:"6px 12px",fontSize:12,fontWeight:700}}>🗑 Reset fin d'année</button>
+  </div>
+  {historique.length===0&&<div style={{textAlign:"center",color:C.muted,padding:"40px"}}>Aucune checklist</div>}
+  {historique.map(report=>{
+    const allOk=!report.issues||report.issues.length===0;
+    const allReapro=report.allReapro;
+    const color=allOk||allReapro?C.success:C.danger;
+    const bg=allOk||allReapro?C.successSoft:C.dangerSoft;
+    return(
+      <div key={report.id} style={{...card,borderLeft:"4px solid "+color,background:bg}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div>
+            <div style={{fontWeight:800,fontSize:14,color:C.text}}>🚑 {report.vehicle}</div>
+            <div style={{fontSize:12,color:C.muted,marginTop:2}}>{report.date} · Sem. {report.semaine||"?"} · {report.amb1||"—"} / {report.amb2||"—"}</div>
+            <div style={{fontSize:11,color:C.muted}}>Complété à {report.progress}%</div>
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div style={{fontSize:20}}>{allOk||allReapro?"✅":"🔴"}</div>
+            <div style={{fontSize:10,color,fontWeight:700}}>{allOk?"Tout OK":allReapro?"Réappro OK":`${report.issues?.length||0} manque(s)`}</div>
+          </div>
+        </div>
+      </div>
+    );
+  })}
+</>}
+
 
         {/* ── COMPTABILITÉ ── */}
         {tab === "comptabilite" && <>
@@ -1032,6 +1042,7 @@ export default function App() {
   const [screen, setScreen] = useState("home");
   const [weeklyDone, setWeeklyDone] = useState({});
   const [reports, setReports] = useState([]);
+  const [historique, setHistorique] = useState([]);
   const [comptabilite, setComptabilite] = useState({});
 
   // Load Firebase realtime
@@ -1041,27 +1052,41 @@ export default function App() {
       if (snap.exists()) setWeeklyDone(snap.data());
     });
     // Reports — realtime
-    const unsubReports = onSnapshot(collection(db, "reports"), (snap) => {
-      const docs = snap.docs.map(d => d.data());
-      setReports(docs.sort((a, b) => b.timestamp - a.timestamp));
-    });
-    // Comptabilite — realtime
-    const unsubCompta = onSnapshot(doc(db, "aps_config", "comptabilite"), (snap) => {
-      if (snap.exists() && snap.data().data) setComptabilite(JSON.parse(snap.data().data));
-    });
-    return () => { unsubWeekly(); unsubReports(); unsubCompta(); };
-  }, []);
+    
+
+
+// Reports — realtime
+const unsubReports = onSnapshot(collection(db, "reports"), (snap) => {
+  const docs = snap.docs.map(d => d.data());
+  setReports(docs.sort((a, b) => b.timestamp - a.timestamp));
+});
+// Historique — realtime
+const unsubHistorique = onSnapshot(collection(db, "historique"), (snap) => {
+  const docs = snap.docs.map(d => d.data());
+  setHistorique(docs.sort((a, b) => b.timestamp - a.timestamp));
+});
+// Comptabilite — realtime
+const unsubCompta = onSnapshot(doc(db, "aps_config", "comptabilite"), (snap) => {
+  if (snap.exists() && snap.data().data) setComptabilite(JSON.parse(snap.data().data));
+});
+return () => { unsubWeekly(); unsubReports(); unsubHistorique(); unsubCompta(); };
+}, []);
+
 
   async function markWeeklyDone(vehicleName) {
     const updated = { ...weeklyDone, [vehicleName]: { week: getWeekKey(), done: true } };
     try { await setDoc(doc(db, "weekly", getWeekKey()), updated, { merge: true }); } catch (e) { console.error(e); }
   }
 
-  async function saveReport(reportData) {
-    const newReport = { id: Date.now(), timestamp: Date.now(), ...reportData, allReapro: reportData.issues.length === 0 };
-    try { await setDoc(doc(db, "reports", String(newReport.id)), newReport); } catch (e) { console.error(e); }
-    markWeeklyDone(reportData.vehicle);
-  }
+  
+
+async function saveReport(reportData) {
+  const newReport = { id: Date.now(), timestamp: Date.now(), ...reportData, allReapro: reportData.issues.length === 0 };
+  try { await setDoc(doc(db, "reports", String(newReport.id)), newReport); } catch(e) { console.error(e); }
+  try { await setDoc(doc(db, "historique", String(newReport.id)), newReport); } catch(e) { console.error(e); }
+  markWeeklyDone(reportData.vehicle);
+}
+
 
   async function deleteReport(reportId) {
     try { await deleteDoc(doc(db, "reports", String(reportId))); } catch (e) { console.error(e); }
@@ -1114,7 +1139,22 @@ export default function App() {
   if (screen === "login") return <AdminLogin onSuccess={() => setScreen("admin")} onBack={() => setScreen("home")} />;
   if (screen === "admin") return <AdminPanel checklists={checklists} onSave={saveChecklists} onBack={() => setScreen("home")} />;
   if (screen === "reports_login") return <ReportsLogin onSuccess={() => setScreen("reports")} onBack={() => setScreen("home")} />;
-  if (screen === "reports") return <ReportsView onBack={() => setScreen("home")} reports={reports} onDeleteReport={deleteReport} onTreatItem={handleReapro} onResetReports={resetReports} comptabilite={comptabilite} onResetComptabilite={resetComptabilite} />;
+  
+
+if(screen==="reports")return <ReportsView onBack={()=>setScreen("home")} reports={reports} onDeleteReport={deleteReport} onTreatItem={handleReapro} onResetReports={resetReports} comptabilite={comptabilite} onResetComptabilite={resetComptabilite} historique={historique} onResetHistorique={resetHistorique}/>;
+
+
+
+async function resetHistorique(){
+  try{
+    const snap=await getDocs(collection(db,"historique"));
+    const batch=writeBatch(db);
+    snap.docs.forEach(d=>batch.delete(d.ref));
+    await batch.commit();
+  }catch(e){console.error(e);}
+}
+
+
   if (screen === "reapro") return <ReaproView onBack={() => setScreen("home")} reports={reports} onReapro={handleReapro} />;
   if (selected) return <ChecklistView vehicleName={selected} data={checklists[selected]} onBack={() => setSelected(null)} onSubmit={saveReport} />;
 
